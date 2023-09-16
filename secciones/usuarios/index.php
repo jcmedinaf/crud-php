@@ -1,5 +1,5 @@
-<?php include("../../../assets/templates/header.php") ?>
+<?php  include_once('../../templates/header.php');  ?>
 
 <h2>Listado de Usuarios</h2>
 
-<?php include("../../../assets/templates/footer.php") ?>
+<?php include("../../templates/footer.php") ?>

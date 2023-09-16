@@ -1,4 +1,4 @@
-<?php include("../../../assets/templates/header.php") ?>
+<?php include("../../templates/header.php") ?>
 
 
 <div class="card">
@@ -69,4 +69,4 @@
     </div>
 </div>
 
-<?php include("../../../assets/templates/footer.php") ?>
+<?php include("../../templates/footer.php") ?>

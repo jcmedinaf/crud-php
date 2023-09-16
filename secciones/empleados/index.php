@@ -1,4 +1,4 @@
-<?php include("../../../assets/templates/header.php") ?>
+<?php  include_once('../../templates/header.php');  ?>
 
 <h2>Listado de Empleados</h2>
 <div class="card">
@@ -42,4 +42,4 @@
 </div>
 
 
-<?php include("../../../assets/templates/footer.php") ?>
+<?php  include_once('../../templates/footer.php');  ?>
