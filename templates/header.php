@@ -1,5 +1,5 @@
 <?php
-$url_base = "http://localhost:81/crud-php/assets/";
+$url_base = "http://localhost:81/crud-php/";
 ?>
 <!doctype html>
 <html lang="en">
