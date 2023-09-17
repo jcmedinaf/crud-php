@@ -17,19 +17,26 @@ if(isset($_GET['txtId'])){
 
 
 if($_POST){
-   // print_r($_POST);
+    print_r($_POST);
 
 //RECOLECTAMOS LOS DATOS DEL METODO POST
-    //$txtIdPuesto = (isset($_POST['txtIdPuesto']) ? $_POST['txtIdPuesto'] : "");
-    //$txtPuesto = (isset($_POST['txtPuesto']) ? $_POST['txtPuesto'] : "");
+$txtIdUsuario = isset($_GET['txtId']) ? $_GET['txtId'] : "";
+$txtNombre = (isset($_POST['txtNombre']) ? $_POST['txtNombre'] : "");
+$txtApellido = (isset($_POST['txtApellido']) ? $_POST['txtApellido'] : "");
+$txtCorreo = (isset($_POST['txtCorreo']) ? $_POST['txtCorreo'] : "");
+$txtContrasena = (isset($_POST['txtContrasena']) ? $_POST['txtContrasena'] : "");
+
 //PREPARAR LA INSERCION DE DATOS
-    //$sentencia=$conexion->prepare("UPDATE puestos SET puesto=:txtPuesto WHERE idPuesto=:txtIdPuesto");   
+    $sentencia=$conexion->prepare("UPDATE usuarios SET nombre=:txtNombre, apellido=:txtApellido, correo=:txtCorreo, clave=:txtContrasena WHERE idUsuario=:txtIdUsuario");   
 
     //ASIGNANDO LOS VALORES QUE VIENEN DEL METODO POST
-    //$sentencia->bindParam(":txtIdPuesto", $txtIdPuesto);
-    //$sentencia->bindParam(":txtPuesto", $txtPuesto);
-    //$sentencia->execute();
-    //header("location: index.php");
+    $sentencia->bindParam(":txtIdUsuario", $txtIdUsuario);
+    $sentencia->bindParam(":txtNombre", $txtNombre);
+    $sentencia->bindParam(":txtApellido", $txtApellido);
+    $sentencia->bindParam(":txtCorreo", $txtCorreo);
+    $sentencia->bindParam(":txtContrasena", $txtContrasena);
+    $sentencia->execute();
+    header("location: index.php");
 }
 
 

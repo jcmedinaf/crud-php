@@ -2,7 +2,7 @@
 include('../../db.php');
 
 if($_POST){
-    print_r($_POST);
+    //print_r($_POST);
 
 //RECOLECTAMOS LOS DATOS DEL METODO POST
     $txtNombre = (isset($_POST['txtNombre']) ? $_POST['txtNombre'] : "");
@@ -16,7 +16,7 @@ if($_POST){
     $sentencia->bindParam(":txtNombre", $txtNombre);
     $sentencia->bindParam(":txtApellido", $txtApellido);
     $sentencia->bindParam(":txtCorreo", $txtCorreo);
-    $sentencia->bindParam(":txtContrasena", MD5($txtContrasena));
+    $sentencia->bindParam(":txtContrasena", $txtContrasena);
     $sentencia->execute();
     header("location: index.php");
 }
