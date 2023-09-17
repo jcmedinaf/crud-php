@@ -9,7 +9,7 @@ if(isset($_GET['txtId'])){
     header("location: index.php");
 }
 
-$sentencia=$conexion->prepare("select * from puestos");
+$sentencia=$conexion->prepare("SELECT * FROM puestos");
 $sentencia->execute();
 $lista_puestos=$sentencia->fetchAll(PDO::FETCH_ASSOC);
 //print_r($lista_puestos);
