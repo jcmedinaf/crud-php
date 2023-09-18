@@ -2,8 +2,8 @@
 include('../../db.php');
 
 if($_POST){
-    print_r($_POST);
-    print_r($_FILES);
+    //print_r($_POST);
+    //print_r($_FILES);
 
     //RECOLECTAMOS LOS DATOS DEL METODO POST
     $txtPrimerNombre = (isset($_POST['txtPrimerNombre']) ? $_POST['txtPrimerNombre'] : "");
@@ -46,7 +46,7 @@ if($_POST){
     $sentencia->bindParam(":txtCv", $txtCv);
 
     $sentencia->execute();
-    //header("location: index.php");
+    header("location: index.php");
 }
 
 

@@ -43,7 +43,7 @@ $lista_empleados=$sentencia->fetchAll(PDO::FETCH_ASSOC);
     </div>
     <div class="card-body">
         <div class="table-responsive-sm">
-            <table class="table">
+            <table class="table" id="tablaID">
                 <thead>
                     <tr>
                         <th scope="col">ID</th>
@@ -67,11 +67,11 @@ $lista_empleados=$sentencia->fetchAll(PDO::FETCH_ASSOC);
                                 class="img-fluid rounded">
 
                         </td>
-                        <td><?php echo $empleados['cv']; ?></td>
+                        <td><a href="<?php echo $ruta_CV . $empleados['cv']; ?>" target="_blank"><?php echo $empleados['cv']; ?></a></td>
                         <td><?php echo $empleados['puesto']; ?></td>
                         <td><?php echo $empleados['fecha_ingreso']; ?></td>
                         <td>
-                            <a name="btn" id="" class="btn btn-secondary" href="#" role="button">Carta</a>
+                            <a name="btn" id="" class="btn btn-secondary"  href="carta.php?txtId=<?php echo $empleados['idEmpleado']; ?>" role="button">Carta</a>
                             <a name="btn" id="" class="btn btn-info"
                                 href="editar.php?txtId=<?php echo $empleados['idEmpleado']; ?>" role="button">Editar</a>
                             <a name="btn" id="" class="btn btn-danger"

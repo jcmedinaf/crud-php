@@ -10,13 +10,16 @@
     </script>
 
     <script>
-        $(document).ready(function(){
+        $(document).ready( function () {
             $('#tablaID').DataTable({
                 "pageLength": 3,
-                lenghttMenu:[
-                    
+                lenghtMenu:[
+                    [5,10,15,20,25],
+                    [5,10,15,20,25]
                 ],
-                "languaje"
+                "language":{
+                    "url":"https://cdn.datatables.net/plug-ins/1.13.1/i18n/es-ES.json"
+                }
             });
         });
     </script>
