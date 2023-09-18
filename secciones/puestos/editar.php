@@ -13,7 +13,7 @@ if(isset($_GET['txtId'])){
 
 
 if($_POST){
-   // print_r($_POST);
+   //print_r($_POST);
 
 //RECOLECTAMOS LOS DATOS DEL METODO POST
     $txtIdPuesto = (isset($_POST['txtIdPuesto']) ? $_POST['txtIdPuesto'] : "");

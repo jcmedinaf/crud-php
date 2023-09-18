@@ -17,7 +17,7 @@ if(isset($_GET['txtId'])){
 
 
 if($_POST){
-    print_r($_POST);
+    //print_r($_POST);
 
 //RECOLECTAMOS LOS DATOS DEL METODO POST
 $txtIdUsuario = isset($_GET['txtId']) ? $_GET['txtId'] : "";

@@ -2,7 +2,7 @@
 include('../../db.php');
 
 if($_POST){
-    print_r($_POST);
+    //print_r($_POST);
 
 //RECOLECTAMOS LOS DATOS DEL METODO POST
     $txtPuesto = (isset($_POST['txtPuesto']) ? $_POST['txtPuesto'] : "");
