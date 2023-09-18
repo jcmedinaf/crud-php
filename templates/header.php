@@ -1,5 +1,11 @@
 <?php
 $url_base = "http://localhost:81/crud-php/";
+session_start();
+
+
+if(!isset($_SESSION['fullName'])){
+    header("location: ". $url_base . "login.php");
+}
 ?>
 <!doctype html>
 <html lang="en">
@@ -18,7 +24,7 @@ $url_base = "http://localhost:81/crud-php/";
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.css" />
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.js"></script>
 
-
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <body>
@@ -41,7 +47,7 @@ $url_base = "http://localhost:81/crud-php/";
                 <a class="nav-link" href="<?php echo $url_base; ?>secciones/usuarios/">USUARIOS</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#">CERRAR SESIÓN</a>
+                <a class="nav-link" href="<?php echo $url_base; ?>cerrar.php">CERRAR SESIÓN</a>
             </li>
         </ul>
     </nav>

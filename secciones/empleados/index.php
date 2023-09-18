@@ -67,15 +67,17 @@ $lista_empleados=$sentencia->fetchAll(PDO::FETCH_ASSOC);
                                 class="img-fluid rounded">
 
                         </td>
-                        <td><a href="<?php echo $ruta_CV . $empleados['cv']; ?>" target="_blank"><?php echo $empleados['cv']; ?></a></td>
+                        <td><a href="<?php echo $ruta_CV . $empleados['cv']; ?>"
+                                target="_blank"><?php echo $empleados['cv']; ?></a></td>
                         <td><?php echo $empleados['puesto']; ?></td>
                         <td><?php echo $empleados['fecha_ingreso']; ?></td>
                         <td>
-                            <a name="btn" id="" class="btn btn-secondary"  href="carta.php?txtId=<?php echo $empleados['idEmpleado']; ?>" role="button">Carta</a>
+                            <a name="btn" id="" class="btn btn-secondary"
+                                href="carta.php?txtId=<?php echo $empleados['idEmpleado']; ?>" role="button">Carta</a>
                             <a name="btn" id="" class="btn btn-info"
                                 href="editar.php?txtId=<?php echo $empleados['idEmpleado']; ?>" role="button">Editar</a>
                             <a name="btn" id="" class="btn btn-danger"
-                                href="index.php?txtId=<?php echo $empleados['idEmpleado']; ?>"
+                                href="javascript:borrar(<?php echo $empleados['idEmpleado']; ?>)"
                                 role="button">Eliminar</a>
                         </td>
                     </tr>
@@ -89,5 +91,23 @@ $lista_empleados=$sentencia->fetchAll(PDO::FETCH_ASSOC);
     </div>
 </div>
 
+<script>
+function borrar(id) {
+    Swal.fire({
+        title: 'Estas seguro de Eliminar el registro?',
+        showCancelButton: true,
+        confirmButtonText: 'Si',
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        cancelButtonText: 'No',
+    }).then((result) => {
+        /* Read more about isConfirmed, isDenied below */
+        if (result.isConfirmed) {
+            window.location = 'index.php?txtId='+id;
+            Swal.fire('Registro Eliminado!', '', 'success')
+        } 
+    })
+}
+</script>
 
 <?php  include_once('../../templates/footer.php');  ?>
