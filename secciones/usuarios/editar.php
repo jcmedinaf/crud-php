@@ -1,48 +1,57 @@
-<?php  
-include('../../db.php');
+<?php
+/*
+=====================================================================
+ ARCHIVO: editar.php (Sección Usuarios)
+ DESCRIPCIÓN: Edición y actualización de usuarios utilizando MySQLi.
+ PROYECTO: crud-php (Fines educativos)
+ AUTOR: Juan Carlos Medina
+=====================================================================
+*/
+
+include_once __DIR__ . '/../../db.php';
 
 if(isset($_GET['txtId'])){
-    $txtId = isset($_GET['txtId']) ? $_GET['txtId'] : "";
-    $sentencia=$conexion->prepare("SELECT * FROM usuarios WHERE idUsuario=:txtId");   
-    $sentencia->bindParam(":txtId", $txtId);
-    $sentencia->execute();
-    $usuario=$sentencia->fetch(PDO::FETCH_LAZY);
-    $txtIdUsuario = $usuario['idUsuario'];
-    $txtNombre = $usuario['nombre'];
-    $txtApellido = $usuario['apellido'];
-    $txtCorreo = $usuario['correo'];
-    $txtContrasena = $usuario['clave'];
-    echo $txtApellido;
+    $txtId = isset($_GET['txtId']) ? mysqli_real_escape_string($conexion, $_GET['txtId']) : "";
+    
+    // Consulta preparada usando MySQLi para obtener los datos del usuario
+    $sql = "SELECT * FROM usuarios WHERE idUsuario = ?";
+    $sentencia = mysqli_prepare($conexion, $sql);
+    mysqli_stmt_bind_param($sentencia, "i", $txtId);
+    mysqli_stmt_execute($sentencia);
+    $resultado = mysqli_stmt_get_result($sentencia);
+    
+    if($usuario = mysqli_fetch_assoc($resultado)){
+        $txtIdUsuario  = $usuario['idUsuario'];
+        $txtNombre     = $usuario['nombre'];
+        $txtApellido   = $usuario['apellido'];
+        $txtCorreo     = $usuario['correo'];
+        $txtContrasena = $usuario['clave'];
+    }
 }
-
 
 if($_POST){
-    //print_r($_POST);
+    // RECOLECTAMOS LOS DATOS DEL METODO POST DE FORMA SEGURA
+    $txtIdUsuario  = isset($_POST['txtIdUsuario']) ? $_POST['txtIdUsuario'] : "";
+    $txtNombre     = isset($_POST['txtNombre']) ? $_POST['txtNombre'] : "";
+    $txtApellido   = isset($_POST['txtApellido']) ? $_POST['txtApellido'] : "";
+    $txtCorreo     = isset($_POST['txtCorreo']) ? $_POST['txtCorreo'] : "";
+    $txtContrasena = isset($_POST['txtContrasena']) ? $_POST['txtContrasena'] : "";
 
-//RECOLECTAMOS LOS DATOS DEL METODO POST
-$txtIdUsuario = isset($_GET['txtId']) ? $_GET['txtId'] : "";
-$txtNombre = (isset($_POST['txtNombre']) ? $_POST['txtNombre'] : "");
-$txtApellido = (isset($_POST['txtApellido']) ? $_POST['txtApellido'] : "");
-$txtCorreo = (isset($_POST['txtCorreo']) ? $_POST['txtCorreo'] : "");
-$txtContrasena = (isset($_POST['txtContrasena']) ? $_POST['txtContrasena'] : "");
-
-//PREPARAR LA INSERCION DE DATOS
-    $sentencia=$conexion->prepare("UPDATE usuarios SET nombre=:txtNombre, apellido=:txtApellido, correo=:txtCorreo, clave=:txtContrasena WHERE idUsuario=:txtIdUsuario");   
-
-    //ASIGNANDO LOS VALORES QUE VIENEN DEL METODO POST
-    $sentencia->bindParam(":txtIdUsuario", $txtIdUsuario);
-    $sentencia->bindParam(":txtNombre", $txtNombre);
-    $sentencia->bindParam(":txtApellido", $txtApellido);
-    $sentencia->bindParam(":txtCorreo", $txtCorreo);
-    $sentencia->bindParam(":txtContrasena", $txtContrasena);
-    $sentencia->execute();
+    // PREPARAR LA ACTUALIZACION DE DATOS CON MYSQLI
+    $sql = "UPDATE usuarios SET nombre = ?, apellido = ?, correo = ?, clave = ? WHERE idUsuario = ?";
+    $sentencia = mysqli_prepare($conexion, $sql);
+    
+    // ASIGNANDO LOS VALORES Y EJECUTANDO
+    mysqli_stmt_bind_param($sentencia, "ssssi", $txtNombre, $txtApellido, $txtCorreo, $txtContrasena, $txtIdUsuario);
+    mysqli_stmt_execute($sentencia);
+    
     header("location: index.php");
+    exit();
 }
-
 
 ?>
 
-<?php include("../../templates/header.php") ?>
+<?php include_once("../../templates/header.php"); ?>
 
 <div class="card">
     <div class="card-header">
@@ -53,32 +62,32 @@ $txtContrasena = (isset($_POST['txtContrasena']) ? $_POST['txtContrasena'] : "")
 
             <div class="mb-3">
                 <label for="idUsuario" class="form-label">ID:</label>
-                <input type="text" value="<?php echo $txtIdUsuario; ?>" readonly class="form-control" name="txtIdUsuario"
+                <input type="text" value="<?php echo isset($txtIdUsuario) ? $txtIdUsuario : ''; ?>" readonly class="form-control" name="txtIdUsuario"
                     id="idUsuario" aria-describedby="helpId" placeholder="">
             </div>
 
             <div class="mb-3">
                 <label for="idNombre" class="form-label">Nombre:</label>
-                <input type="text" value="<?php echo $txtNombre; ?>" class="form-control" name="txtNombre" id="idNombre" aria-describedby="helpId"
-                    placeholder="">
+                <input type="text" value="<?php echo isset($txtNombre) ? $txtNombre : ''; ?>" class="form-control" name="txtNombre" id="idNombre" aria-describedby="helpId"
+                    placeholder="" required>
             </div>
 
             <div class="mb-3">
                 <label for="idApellido" class="form-label">Apellido:</label>
-                <input type="text" value="<?php echo $txtApellido; ?>" class="form-control" name="txtApellido" id="idApellido" aria-describedby="helpId"
-                    placeholder="">
+                <input type="text" value="<?php echo isset($txtApellido) ? $txtApellido : ''; ?>" class="form-control" name="txtApellido" id="idApellido" aria-describedby="helpId"
+                    placeholder="" required>
             </div>
 
             <div class="mb-3">
                 <label for="idCorreo" class="form-label">Correo:</label>
-                <input type="email" value="<?php echo $txtCorreo; ?>" class="form-control" name="txtCorreo" id="idCorreo" aria-describedby="helpId"
-                    placeholder="">
+                <input type="email" value="<?php echo isset($txtCorreo) ? $txtCorreo : ''; ?>" class="form-control" name="txtCorreo" id="idCorreo" aria-describedby="helpId"
+                    placeholder="" required>
             </div>
 
             <div class="mb-3">
                 <label for="idContrasena" class="form-label">Contraseña:</label>
-                <input type="password" value="<?php echo $txtContrasena; ?>" class="form-control" name="txtContrasena" id="idContrasena" aria-describedby="helpId"
-                    placeholder="">
+                <input type="text" value="<?php echo isset($txtContrasena) ? $txtContrasena : ''; ?>" class="form-control" name="txtContrasena" id="idContrasena" aria-describedby="helpId"
+                    placeholder="" required>
             </div>
 
             <div class="mb-3">
@@ -94,4 +103,4 @@ $txtContrasena = (isset($_POST['txtContrasena']) ? $_POST['txtContrasena'] : "")
     </div>
 
 </div>
-<?php include("../../templates/footer.php") ?>
+<?php include_once("../../templates/footer.php"); ?>

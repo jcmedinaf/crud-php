@@ -1,20 +1,40 @@
-<?php  
-include('../../db.php');
+<?php 
+/*
+=====================================================================
+ ARCHIVO: index.php (Sección Puestos)
+ DESCRIPCIÓN: Listado, gestión y eliminación de puestos con MySQLi.
+ PROYECTO: crud-php (Fines educativos)
+ AUTOR: Juan Carlos Medina
+=====================================================================
+*/
+
+// Carga robusta usando la ruta absoluta del directorio actual
+include_once __DIR__ . '/../../db.php';
 
 if(isset($_GET['txtId'])){
-    $txtId = isset($_GET['txtId']) ? $_GET['txtId'] : "";
-    $sentencia=$conexion->prepare("DELETE FROM puestos WHERE idPuesto=:txtId");   
-    $sentencia->bindParam(":txtId", $txtId);
-    $sentencia->execute();
+    $txtId = isset($_GET['txtId']) ? mysqli_real_escape_string($conexion, $_GET['txtId']) : "";
+    
+    // Consulta preparada usando MySQLi para eliminar
+    $sql = "DELETE FROM puestos WHERE idPuesto = ?";
+    $sentencia = mysqli_prepare($conexion, $sql);
+    mysqli_stmt_bind_param($sentencia, "i", $txtId);
+    mysqli_stmt_execute($sentencia);
+    
     header("location: index.php");
+    exit();
 }
 
-$sentencia=$conexion->prepare("SELECT * FROM puestos");
-$sentencia->execute();
-$lista_puestos=$sentencia->fetchAll(PDO::FETCH_ASSOC);
-//print_r($lista_puestos);
+// Obtener el listado de puestos usando MySQLi
+$sql = "SELECT * FROM puestos";
+$resultado = mysqli_query($conexion, $sql);
+$lista_puestos = [];
+if ($resultado) {
+    while ($fila = mysqli_fetch_assoc($resultado)) {
+        $lista_puestos[] = $fila;
+    }
+}
 ?>
-<?php  include_once('../../templates/header.php');  ?>
+<?php include_once('../../templates/header.php'); ?>
 
 <h2>Listado de Puestos</h2>
 <div class="card">

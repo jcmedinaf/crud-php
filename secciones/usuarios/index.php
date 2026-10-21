@@ -1,20 +1,39 @@
-<?php  
-include('../../db.php');
+<?php
+/*
+=====================================================================
+ ARCHIVO: index.php (Sección Usuarios)
+ DESCRIPCIÓN: Listado, gestión y eliminación de usuarios con MySQLi.
+ PROYECTO: crud-php (Fines educativos)
+ AUTOR: Juan Carlos Medina
+=====================================================================
+*/
+
+include_once __DIR__ . '/../../db.php';
 
 if(isset($_GET['txtId'])){
-    $txtId = isset($_GET['txtId']) ? $_GET['txtId'] : "";
-    $sentencia=$conexion->prepare("DELETE FROM usuarios WHERE idUsuario=:txtId");   
-    $sentencia->bindParam(":txtId", $txtId);
-    $sentencia->execute();
+    $txtId = isset($_GET['txtId']) ? mysqli_real_escape_string($conexion, $_GET['txtId']) : "";
+    
+    // Consulta preparada usando MySQLi para eliminar
+    $sql = "DELETE FROM usuarios WHERE idUsuario = ?";
+    $sentencia = mysqli_prepare($conexion, $sql);
+    mysqli_stmt_bind_param($sentencia, "i", $txtId);
+    mysqli_stmt_execute($sentencia);
+    
     header("location: index.php");
+    exit();
 }
 
-$sentencia=$conexion->prepare("SELECT * FROM usuarios");
-$sentencia->execute();
-$lista_usuarios=$sentencia->fetchAll(PDO::FETCH_ASSOC);
-//print_r($lista_usuarios);
+// Obtener el listado de usuarios usando MySQLi
+$sql = "SELECT * FROM usuarios";
+$resultado = mysqli_query($conexion, $sql);
+$lista_usuarios = [];
+if ($resultado) {
+    while ($fila = mysqli_fetch_assoc($resultado)) {
+        $lista_usuarios[] = $fila;
+    }
+}
 ?>
-<?php  include_once('../../templates/header.php');  ?>
+<?php include_once('../../templates/header.php'); ?>
 
 <h2>Listado de Usuarios</h2>
 <div class="card">
@@ -37,10 +56,10 @@ $lista_usuarios=$sentencia->fetchAll(PDO::FETCH_ASSOC);
             <tbody>
                 <?php foreach($lista_usuarios as $usuarios){ ?>
                     <tr class="">
-                        <td scope="row"><?php echo  $usuarios['idUsuario']; ?></td>
-                        <td><?php echo  $usuarios['nombre']; ?></td>
-                        <td><?php echo  $usuarios['apellido']; ?></td>
-                        <td><?php echo  $usuarios['correo']; ?></td>
+                        <td scope="row"><?php echo $usuarios['idUsuario']; ?></td>
+                        <td><?php echo $usuarios['nombre']; ?></td>
+                        <td><?php echo $usuarios['apellido']; ?></td>
+                        <td><?php echo $usuarios['correo']; ?></td>
                         <td>****</td>
                         <td>
                             <a name="btn" id="" class="btn btn-info" href="editar.php?txtId=<?php echo $usuarios['idUsuario']; ?>" role="button">Editar</a>  

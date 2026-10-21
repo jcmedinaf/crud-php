@@ -1,40 +1,62 @@
-<?php  
-include('../../db.php');
+<?php
+/*
+=====================================================================
+ ARCHIVO: index.php (Sección Empleados)
+ DESCRIPCIÓN: Listado, gestión, eliminación de archivos y registros con MySQLi.
+ PROYECTO: crud-php (Fines educativos)
+ AUTOR: Juan Carlos Medina
+=====================================================================
+*/
+
+include_once __DIR__ . '/../../db.php';
 $ruta_foto = '../../assets/img/fotos/';
 $ruta_CV = '../../assets/pdf/';
 
 if(isset($_GET['txtId'])){
-    $txtId = isset($_GET['txtId']) ? $_GET['txtId'] : "";
-    $sentencia=$conexion->prepare("SELECT foto, cv FROM empleados WHERE idEmpleado=:txtId");   
-    $sentencia->bindParam(":txtId", $txtId);
-    $sentencia->execute();
-    $registro=$sentencia->fetch(PDO::FETCH_LAZY);
+    $txtId = isset($_GET['txtId']) ? mysqli_real_escape_string($conexion, $_GET['txtId']) : "";
+    
+    // Obtener los archivos asociados para eliminarlos del servidor usando MySQLi
+    $sql = "SELECT foto, cv FROM empleados WHERE idEmpleado = ?";
+    $sentencia = mysqli_prepare($conexion, $sql);
+    mysqli_stmt_bind_param($sentencia, "i", $txtId);
+    mysqli_stmt_execute($sentencia);
+    $resultado = mysqli_stmt_get_result($sentencia);
+    
+    if($registro = mysqli_fetch_assoc($resultado)){
+        if(isset($registro['foto']) && $registro['foto'] != ""){
+            if(file_exists($ruta_foto . $registro['foto'])){
+                unlink($ruta_foto . $registro['foto']);
+            }
+        }
 
-    print_r($registro);
-    if(isset($registro['foto']) && $registro['foto'] !=""){
-        if(file_exists($ruta_foto . $registro['foto'])){
-            unlink($ruta_foto . $registro['foto']);
+        if(isset($registro['cv']) && $registro['cv'] != ""){
+            if(file_exists($ruta_CV . $registro['cv'])){
+                unlink($ruta_CV . $registro['cv']);
+            }
         }
     }
 
-    if(isset($registro['cv']) && $registro['cv'] !=""){
-        if(file_exists($ruta_CV . $registro['cv'])){
-            unlink($ruta_CV . $registro['cv']);
-        }
-    }
-
-    $sentencia=$conexion->prepare("DELETE FROM empleados WHERE idEmpleado=:txtId");   
-    $sentencia->bindParam(":txtId", $txtId);
-    $sentencia->execute();
+    // Eliminar el registro de la base de datos
+    $sql_delete = "DELETE FROM empleados WHERE idEmpleado = ?";
+    $sentencia_delete = mysqli_prepare($conexion, $sql_delete);
+    mysqli_stmt_bind_param($sentencia_delete, "i", $txtId);
+    mysqli_stmt_execute($sentencia_delete);
+    
     header("location: index.php");
+    exit();
 }
 
-$sentencia=$conexion->prepare("SELECT *, (SELECT puesto FROM puestos p where p.idPuesto = e.idPuesto) as puesto FROM empleados e");
-$sentencia->execute();
-$lista_empleados=$sentencia->fetchAll(PDO::FETCH_ASSOC);
-//print_r($lista_empleados);
+// Obtener el listado completo de empleados usando MySQLi
+$sql = "SELECT e.*, (SELECT puesto FROM puestos p WHERE p.idPuesto = e.idPuesto) as puesto FROM empleados e";
+$resultado = mysqli_query($conexion, $sql);
+$lista_empleados = [];
+if ($resultado) {
+    while ($fila = mysqli_fetch_assoc($resultado)) {
+        $lista_empleados[] = $fila;
+    }
+}
 ?>
-<?php  include_once('../../templates/header.php');  ?>
+<?php include_once('../../templates/header.php'); ?>
 
 <h2>Listado de Empleados</h2>
 <div class="card">
@@ -110,4 +132,4 @@ function borrar(id) {
 }
 </script>
 
-<?php  include_once('../../templates/footer.php');  ?>
+<?php include_once('../../templates/footer.php'); ?>

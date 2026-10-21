@@ -1,35 +1,47 @@
 <?php
-include('../../db.php');
+/*
+=====================================================================
+ ARCHIVO: carta.php (Sección Empleados)
+ DESCRIPCIÓN: Generación de carta de recomendación en PDF con MySQLi y Dompdf.
+ PROYECTO: crud-php (Fines educativos)
+ AUTOR: Juan Carlos Medina
+=====================================================================
+*/
+
+include_once __DIR__ . '/../../db.php';
 $ruta_foto = '../../assets/img/fotos/';
 $ruta_CV = '../../assets/pdf/';
 
 if(isset($_GET['txtId'])){
-    $txtId = isset($_GET['txtId']) ? $_GET['txtId'] : "";
-    $sentencia=$conexion->prepare("SELECT *, (SELECT puesto FROM puestos p where p.idPuesto = e.idPuesto) as puesto FROM empleados e WHERE e.idEmpleado=:txtId");   
-    $sentencia->bindParam(":txtId", $txtId);
-    $sentencia->execute();
-    $empleado=$sentencia->fetch(PDO::FETCH_LAZY);
-    $txtID = $empleado['idEmpleado'];
-  
-    //print_r($empleado);
+    $txtId = isset($_GET['txtId']) ? mysqli_real_escape_string($conexion, $_GET['txtId']) : "";
+    
+    // Consulta preparada usando MySQLi
+    $sql = "SELECT *, (SELECT puesto FROM puestos p WHERE p.idPuesto = e.idPuesto) as puesto FROM empleados e WHERE e.idEmpleado = ?";
+    $sentencia = mysqli_prepare($conexion, $sql);
+    mysqli_stmt_bind_param($sentencia, "i", $txtId);
+    mysqli_stmt_execute($sentencia);
+    $resultado = mysqli_stmt_get_result($sentencia);
+    
+    if($empleado = mysqli_fetch_assoc($resultado)){
+        $txtID = $empleado['idEmpleado'];
+        $txtPrimerNombre = $empleado['primer_nombre'];
+        $txtSegundoNombre = $empleado['segundo_nombre'];
+        $txtPrimerApellido = $empleado['primer_apellido'];
+        $txtSegundoApellido = $empleado['segundo_apellido'];
+        $txtIdPuesto = $empleado['idPuesto'];
+        $txtFechaIngreso = $empleado['fecha_ingreso'];
+        $txtPuesto = $empleado['puesto'];
 
-    $txtPrimerNombre = $empleado['primer_nombre'];
-    $txtSegundoNombre = $empleado['segundo_nombre'];
-    $txtPrimerApellido = $empleado['primer_apellido'];
-    $txtSegundoApellido = $empleado['segundo_apellido'];
-    $txtIdPuesto = $empleado['idPuesto'];
-    $txtFechaIngreso = $empleado['fecha_ingreso'];
-    $txtPuesto = $empleado['puesto'];
+        $fechaInicio = new DateTime($txtFechaIngreso);
+        $fechaFin = new DateTime(date('Y-m-d'));
+        $diferencia = date_diff($fechaInicio, $fechaFin);
+        $fechaActual = date('d-m-Y');
 
-    $fechaInicio = new DateTime($txtFechaIngreso);
-    $fechaFin = new DateTime(date('Y-m-d'));
-    $diferencia = date_diff($fechaInicio, $fechaFin);
-    $fechaActual = date('d-m-Y');
+        $txtFoto = $empleado['foto'];
+        $txtCV = $empleado['cv'];
 
-    $txtFoto = $empleado['foto'];
-    $txtCV = $empleado['cv'];
-
-    $fullName = $txtPrimerNombre . " " . $txtSegundoNombre. " " . $txtPrimerApellido . " " . $txtSegundoApellido;
+        $fullName = $txtPrimerNombre . " " . $txtSegundoNombre . " " . $txtPrimerApellido . " " . $txtSegundoApellido;
+    }
 
     ob_start();
 }
@@ -40,7 +52,7 @@ if(isset($_GET['txtId'])){
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Carta de Recomendación</title>
 </head>
 <body>
     <h1>Carta de Recomendación Laboral</h1>
@@ -51,12 +63,12 @@ if(isset($_GET['txtId'])){
     <br><br>
     Reciba un cordial y respetuoso saludo.
     <br><br>
-    A través de estas líneas dese o hacer de su conocimiento que el(la) Sr(a) <strong><?php echo $fullName; ?></strong>, quíen laboró en mi organicación durante <strong><?php echo $diferencia->y; ?> años</strong>, es un ciudadano con una conducta intachable. Ha desmitrador ser un gran trabajador, comprometido, responsable y fiel cumplidor de sus tareas. Siempre ha manifestado preocupación por mejorar, capracitarse y actualzar sus conocimientos.
+    A través de estas líneas deseo hacer de su conocimiento que el(la) Sr(a) <strong><?php echo $fullName; ?></strong>, quien laboró en mi organización durante <strong><?php echo $diferencia->y; ?> años</strong>, es un ciudadano con una conducta intachable. Ha demostrado ser un gran trabajador, comprometido, responsable y fiel cumplidor de sus tareas. Siempre ha manifestado preocupación por mejorar, capacitarse y actualizar sus conocimientos.
     <br><br>
     Durante estos años se ha desempeñado como: <strong> <?php echo $txtPuesto; ?> </strong>.
-    Es por ellos le sugiero considere esta recomendación, con la confianza de que estará sempre a la altura de sus compromisos y responsabilidades.
+    Es por ello que le sugiero considere esta recomendación, con la confianza de que estará siempre a la altura de sus compromisos y responsabilidades.
     <br><br>
-    Sin más nada a que referime y, esperando que esta misiva sea tomada en cuenta, dejo mi número de contacto para cualquier información de interés.
+    Sin más nada a que referirme y, esperando que esta misiva sea tomada en cuenta, dejo mi número de contacto para cualquier información de interés.
     <br><br><br>
     Atentamente,
     <br><br>
@@ -67,7 +79,7 @@ if(isset($_GET['txtId'])){
 
 <?php
 $HTML = ob_get_clean();
-require_once('../../libs/autoload.inc.php');
+require_once(__DIR__ . '/../../libs/autoload.inc.php');
 use Dompdf\Dompdf;
 $dompdf = new Dompdf();
 $opciones = $dompdf->getOptions();
@@ -77,5 +89,5 @@ $dompdf->setOptions($opciones);
 $dompdf->loadHtml($HTML);
 $dompdf->setPaper('letter');
 $dompdf->render();
-$dompdf->stream("archivo.pdf",array("Attachment"=>false));
+$dompdf->stream("carta_recomendacion.pdf", array("Attachment"=>false));
 ?>
